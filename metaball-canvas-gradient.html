@@ -1,0 +1,99 @@
+<!--用漸層重疊來做 metaball 效果-->
+<!--https://www.somethinghitme.com/2012/06/06/2d-metaballs-with-canvas/-->
+<!--http://jsfiddle.net/loktar/TscNZ/-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <!--用漸層重疊來做 metaball 效果-->
+    <canvas id="canvas">CANVAS metaballs</canvas>
+
+    <script>
+       var canvas = document.getElementById("canvas"),
+            ctx = canvas.getContext("2d"),
+            tempCanvas = document.createElement("canvas"),
+            tempCtx = tempCanvas.getContext("2d"),
+            width = 300,
+            height = 250,
+            threshold = 150,
+            colors = {r:255,g:0,b:0}, cycle = 0,
+            points = [];
+
+        canvas.width = tempCanvas.width = width;
+        canvas.height= tempCanvas.height= height;
+
+        for(var i = 0; i < 30; i++){  // 30個
+            // 這是大小變化的種子！
+            var x = Math.random()*width, // 300之內的亂數
+                y = Math.random()*height, // 250之內的亂數
+                vx = (Math.random()*2)-1, // 大概就是讓變化大一點
+                vy = (Math.random()*2)-1,
+                size = Math.floor(Math.random()*20)+40; // 20以內亂數再加40, 20~60
+
+            points.push({x:x,y:y,vx:vx,vy:vy, size:size});
+            // e.g. [
+            //          {x:300, y:250, vx:0.4, vy:0.6, size:78},
+            //          {x:200, y:199, vx:0.55, vy:0.75, size:112}
+            //      ]
+
+        };
+
+        function update(){
+            var len = points.length; //30
+            tempCtx.clearRect(0,0,width,height);
+            while(len--){
+                var point = points[len];
+
+                // 這是移動的種子！
+                point.x+=point.vx;  // 300+=0.4
+                point.y+=point.vy;  // 250+=0.6
+
+                if(point.x > width+point.size){ // 超出右邊
+                    point.x = 0-point.size;
+                }
+                if(point.x < 0-point.size){ // 超出左邊
+                    point.x = width+point.size;
+                }
+                if(point.y > height+point.size){ // 超出底端
+                    point.y = 0-point.size;
+                }
+                if(point.y < 0-point.size){ // 超出頂端
+                    point.y = height+point.size;
+                }
+
+                tempCtx.beginPath();
+                var grad = tempCtx.createRadialGradient(point.x, point.y, 1, point.x, point.y, point.size); // (x座標, y座標, 1, x座標, y座標, 40)
+                grad.addColorStop(0, 'rgba(' + colors.r +',' + colors.g + ',' + colors.b + ',1)');
+                grad.addColorStop(1, 'rgba(' + colors.r +',' + colors.g + ',' + colors.b + ',0)');
+                tempCtx.fillStyle = grad;
+                tempCtx.arc(point.x, point.y, point.size, 0, Math.PI*2); //從 x,y 畫圓 2PIr
+                tempCtx.fill();
+            }
+
+            //收斂透明度
+            var imageData = tempCtx.getImageData(0,0,width,height)
+            // pix = imageData.data;
+            // for (var i = 0, n = pix.length; i <n; i += 4) {
+            //     if(pix[i+3]<threshold){
+            //         pix[i+3]/=6;
+            //     }
+            // }
+            ctx.putImageData(imageData, 0, 0);
+
+            // colorCycle();
+            requestAnimationFrame(update);
+        }
+
+        // 第一次是起始值
+        update();
+
+    </script>
+</body>
+</html>
