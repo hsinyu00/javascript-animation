@@ -20,10 +20,10 @@
             ctx = canvas.getContext("2d"),
             tempCanvas = document.createElement("canvas"),
             tempCtx = tempCanvas.getContext("2d"),
-            width = 300,
-            height = 250,
+            width = 600,
+            height = 500,
             threshold = 150,
-            colors = {r:255,g:0,b:0}, cycle = 0,
+            colors = {r:188,g:91,b:39}, cycle = 0,
             points = [];
 
         canvas.width = tempCanvas.width = width;
@@ -31,11 +31,11 @@
 
         for(var i = 0; i < 30; i++){  // 30個
             // 這是大小變化的種子！
-            var x = Math.random()*width, // 300之內的亂數
-                y = Math.random()*height, // 250之內的亂數
+            var x = Math.random()*width, // 600之內的亂數
+                y = Math.random()*height, // 500之內的亂數
                 vx = (Math.random()*2)-1, // 大概就是讓變化大一點
                 vy = (Math.random()*2)-1,
-                size = Math.floor(Math.random()*20)+40; // 20以內亂數再加40, 20~60
+                size = Math.floor(Math.random()*20)+60; // 20以內亂數再加60, 0~80
 
             points.push({x:x,y:y,vx:vx,vy:vy, size:size});
             // e.g. [
@@ -52,8 +52,8 @@
                 var point = points[len];
 
                 // 這是移動的種子！
-                point.x+=point.vx;  // 300+=0.4
-                point.y+=point.vy;  // 250+=0.6
+                point.x+=point.vx;  // 600+=0.4
+                point.y+=point.vy;  // 500+=0.6
 
                 if(point.x > width+point.size){ // 超出右邊
                     point.x = 0-point.size;
@@ -77,15 +77,15 @@
                 tempCtx.fill();
             }
 
-            //收斂透明度
-            var imageData = tempCtx.getImageData(0,0,width,height)
-            // pix = imageData.data;
-            // for (var i = 0, n = pix.length; i <n; i += 4) {
-            //     if(pix[i+3]<threshold){
-            //         pix[i+3]/=6;
-            //     }
-            // }
-            ctx.putImageData(imageData, 0, 0);
+            // 收斂透明度，同 css contract 的作用
+            var imageData = tempCtx.getImageData(0,0,width,height) // getImageData 讀整個畫面像素
+            pix = imageData.data;
+            for (var i = 0, n = pix.length; i <n; i += 4) { // i += 4 是因像素資料四個一組，第四個是透明度
+                if(pix[i+3]<threshold){
+                    pix[i+3]/=6;
+                }
+            }
+            ctx.putImageData(imageData, 0, 0); // 再放回去
 
             // colorCycle();
             requestAnimationFrame(update);
