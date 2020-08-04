@@ -19,7 +19,7 @@
         .wrap {
             background: #000;
             bottom: 0;
-            filter: blur(10px) contrast(10); /* 把 blur 的邊緣變實心 */
+            filter: blur(10px) contrast(8); /* 把 blur 的邊緣變實心 */
             left: 0;
             position: absolute;
             right: 0;
@@ -27,7 +27,7 @@
         }
 
         .orb {
-            /* background: #fff; */
+            background: linear-gradient(135deg, rgba(226,186,172,1) 0%,rgba(210,75,90,1) 60%,rgba(186,39,55,1) 88%,rgba(241,142,153,1) 100%);
             border-radius: 50%;
             box-sizing: border-box;
             left: 0;
@@ -54,7 +54,7 @@
         function init() {
             wrap = document.querySelector( '.wrap' );
             orbs = [];
-            count = 20;
+            count = 30;
             reset();
             loop();
         }
@@ -74,8 +74,8 @@
                         elem: elem,
                         x: rand( 0, cw ),
                         y: rand( 0, ch ),
-                        vx: rand( -1, 1 ),
-                        vy: rand( -1, 1 ),
+                        vx: rand( -1, 1 ) * 2,
+                        vy: rand( -1, 1 ) * 2,
                         radius: rand( avg / 50, avg / 10 ) // 假如視窗 1280*800 rand(1040/50, 1040/10) => rand(20.8, 104)
                     };
                 elem.className = 'orb';
